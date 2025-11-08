@@ -18,7 +18,7 @@ app.use("/files", express.static(filesDir));
 // Homepage: show list of files
 app.get("/", (req, res) => {
   const files = fs.readdirSync(filesDir)
-    .filter(f => f.endsWith(".pdf") || f.endsWith(".pay"));
+    .filter(f => f.endsWith(".pdf") || f.endsWith(".py"));
 
   const fileLinks = files.map(f => `
     <li>
