@@ -3,23 +3,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Manually define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Vercel provides the port
 
 const server = http.createServer((req, res) => {
-    let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+    // Look in the 'public' directory
+    let filePath = path.join(__dirname, 'public', req.url === '/' ? 'index.html' : req.url);
 
     fs.readFile(filePath, (error, content) => {
         if (error) {
             if (error.code === 'ENOENT') {
-                // If page doesn't exist, serve index.html (Redirect to Home)
-                fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
+                // FALLBACK: If file doesn't exist, always serve the main index.html
+                fs.readFile(path.join(__dirname, 'public', 'index.html'), (err, data) => {
                     if (err) {
                         res.writeHead(404);
-                        res.end("Primary index.html not found.");
+                        res.end("Primary index.html not found in public folder.");
                     } else {
                         res.writeHead(200, { 'Content-Type': 'text/html' });
                         res.end(data, 'utf-8');
@@ -39,5 +39,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Server is live at http://localhost:${PORT}`);
+    console.log(`Server live on port ${PORT}`);
 });
