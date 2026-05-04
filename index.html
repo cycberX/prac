@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Advanced Lab Manager</title>
+</head>
+
+<body class="bg-gray-50 p-4 md:p-10 font-sans">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Experiment Registry</h1>
+            <p class="text-gray-500 mt-2 text-lg">Click any card to see full plugins, sites, and technical points.</p>
+        </header>
+
+        <!-- LIST VIEW -->
+        <div id="listView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div id="detailView" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <button onclick="showList()"
+                class="mb-8 flex items-center gap-2 text-blue-600 font-bold hover:text-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+                Back to Dashboard
+            </button>
+
+            <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+                <div id="detHeader" class="p-10 bg-gradient-to-r from-gray-900 to-blue-900 text-white">
+                    <!-- Title & Subtitle -->
+                </div>
+
+                <div class="p-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Column 1: Links & Sites -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-black uppercase text-blue-600 tracking-widest">Connected Sites</h3>
+                        <div id="detSites" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Column 2: Plugins -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-black uppercase text-purple-600 tracking-widest">Active Plugins</h3>
+                        <div id="detPlugins" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Column 3: Key Points -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-black uppercase text-green-600 tracking-widest">Key Points</h3>
+                        <ul id="detPoints" class="space-y-3 text-gray-700"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data with multiple sites, plugins, and points
+        const experiments = [
+            {
+                id: 1,
+                title: "Keyword Research & SEO",
+                desc: "A complete workflow for finding high-ranking keywords and creating social media marketing assets.",
+                sites: [
+                    { name: "Semrush Analytics", url: "www.semrush.com/analytics/keywordoverview/" },
+                    { name: "Facebook", url: "facebook.com" },
+                    { name: "Instagram", url: "instagram.com" },
+                    { name: "Canva Design", url: "canva.com" },
+                    { name: "Demo Websites", url: "github.com/topics/landingpage?l=html" }
+                ],
+                plugins: ["Keyword Overview", "Off-page SEO", "Graphic Design", "Social Posting"],
+                points: [
+                    "<strong>SEO Basics:</strong> Applied <strong>On-Page SEO</strong> (fixing content on the site) and <strong>Off-Page SEO</strong> (building links from Facebook/Instagram).",
+                    "<strong>Keyword Selection:</strong> Found high-value words that people type into Google to find information.",
+                    "<strong>Monthly Search Volume:</strong> Analyzed how many people search for these keywords every 30 days.",
+                    "<strong>Keyword Difficulty (KD):</strong> Checked how hard it is to rank on the first page of Google for specific terms.",
+                    "<strong>Search Intent:</strong> Identified if the user wants to buy something, find a site, or just get information.",
+                    "<strong>CPC (Cost Per Click):</strong> Checked the value of keywords if we were to run paid ads.",
+                    "<strong>SERP Analysis:</strong> Studied the top 10 results on Google to see what the competition is doing right."
+                ]
+            },
+            {
+                id: 2,
+                title: "Buffer: Social Media Management",
+                desc: "Using Buffer to connect multiple social channels and schedule a full week of content in advance.",
+                sites: [
+                    { name: "Buffer Dashboard", url: "buffer.com" },
+                    { name: "Facebook", url: "facebook.com" },
+                    { name: "Instagram", url: "instagram.com" },
+                    { name: "Canva", url: "canva.com" }
+                ],
+                plugins: ["Buffer Scheduler", "Canva Integration", "Content Calendar", "Social Analytics"],
+                points: [
+                    "<strong>Tool Purpose:</strong> Used <strong>Buffer</strong> as a central hub to manage Facebook and Instagram from one dashboard.",
+                    "<strong>Login & Access:</strong> Successfully authenticated into Buffer using primary credentials to access the management panel.",
+                    "<strong>Account Logic:</strong> Grouped social media accounts into specific 'Brands' to keep business posts organized.",
+                    "<strong>Channel Connection:</strong> Connected <strong>Facebook Pages</strong> and <strong>Instagram Business</strong> accounts as active channels.",
+                    "<strong>Content Design:</strong> Used <strong>Canva</strong> to design 7 high-quality posters (one for each day of the week).",
+                    "<strong>Scheduling Logic:</strong> Uploaded designs to Buffer and set specific time slots for 1 full week (7 days) to ensure consistent posting.",
+                    "<strong>Automation Benefit:</strong> Verified that posts go live automatically without manual intervention each day."
+                ]
+            },
+            {
+                id: 3,
+                title: "Facebook Ads & Campaign Management",
+                desc: "Setting up a paid advertising campaign using Meta Business Suite and Ads Manager.",
+                sites: [
+                    { name: "Meta Business Suite", url: "business.facebook.com/latest/" },
+                    { name: "Ads Manager", url: "adsmanager.facebook.com" },
+                    { name: "Canva", url: "canva.com" }
+                ],
+                plugins: ["Meta Pixel", "Ad Creative", "Audience Insights", "Budget Tool"],
+                points: [
+                    "<strong>Theory of Ad Hierarchy:</strong> Understanding the structure: <strong>Campaign</strong> (Goal) > <strong>Ad Set</strong> (Audience/Budget) > <strong>Ad</strong> (Creative).",
+                    "<strong>Design Phase:</strong> Created a high-converting ad poster in <strong>Canva</strong> using the 1080x1080 (Square) format for best visibility.",
+                    "<strong>Objective Selection:</strong> Chose a Campaign objective (e.g., Traffic or Awareness) inside <strong>Meta Business Suite</strong>.",
+                    "<strong>Targeting Logic:</strong> Defined the <strong>Audience</strong> based on location, age, and interests to reduce wasted ad spend.",
+                    "<strong>Ad Placement:</strong> Selected where the ad appears (Facebook Feed, Instagram Stories, or Audience Network).",
+                    "<strong>Budgeting:</strong> Set a Daily Budget vs. Lifetime Budget to control the experiment costs.",
+                    "<strong>Final Publishing:</strong> Uploaded the Canva media, added a 'Call to Action' (CTA) button, and hit <strong>Publish</strong> to start the campaign."
+                ]
+            },
+            {
+                id: 4,
+                title: "Email Marketing & WP Integration",
+                desc: "Setting up a professional newsletter system by connecting WordPress to Mailchimp using sample data.",
+                sites: [
+                    { name: "Mailchimp Portal", url: "login.mailchimp.com/" },
+                    { name: "Mockaroo (Data Gen)", url: "www.mockaroo.com/" },
+                    { name: "WordPress Admin", url: "#" }
+                ],
+                plugins: ["MC4WP (Mailchimp for WordPress)", "Contact Form 7", "SMTP Mailer"],
+                points: [
+                    "<strong>Data Generation:</strong> Used <strong>Mockaroo</strong> to generate a CSV file of sample names and emails for testing the system.",
+                    "<strong>Audience Setup:</strong> Imported the sample data into <strong>Mailchimp</strong> to create a mock subscriber list.",
+                    "<strong>WP Connection:</strong> Installed and configured the <strong>MC4WP</strong> plugin on a WordPress site to link the front-end to the Mailchimp API.",
+                    "<strong>Form Logic:</strong> Created a 'Sign-up' form that automatically adds website visitors to the specific Mailchimp audience list.",
+                    "<strong>Theory of Automation:</strong> Understanding <strong>Double Opt-in</strong> (user confirms email) vs <strong>Single Opt-in</strong> (added immediately).",
+                    "<strong>Important Note:</strong> This setup allows for automatic synchronization between WordPress users and Mailchimp marketing campaigns."
+                ]
+            },
+            {
+                id: 5,
+                title: "Influencer Outreach & Brand Promotion",
+                desc: "Executing a strategic campaign to promote eco-friendly skincare through Instagram influencers.",
+                sites: [
+                    { name: "Instagram (Search/DM)", url: "instagram.com" }
+                ],
+                plugins: ["Instagram Insights"],
+                points: [
+                    "<strong>Campaign Goal:</strong> Focused on increasing visibility for sustainable skincare with a target of 100K reach and 500 orders in 30 days.",
+                    "<strong>Target Persona:</strong> Targeted environmentally-conscious females aged 20-35 interested in vegan and clean beauty.",
+                    "<strong>Influencer Discovery:</strong> Used hashtags like #SustainableBeauty and competitor analysis (Mamaearth, Plum) to find micro-influencers (10K-100K followers).",
+                    "<strong>Outreach Strategy:</strong> Sent professional emails and DMs offering collaboration through sponsored Reels, product reviews, and affiliate partnerships.",
+                    "<strong>Content Deliverables:</strong> Requested high-impact assets including 'Unboxing' Stories, 'Before vs After' Reels, and ingredient highlight posts.",
+                    "<strong>Sales Conversion:</strong> Implemented trackable discount codes (e.g., ECO10) and swipe-up links to drive and measure direct online sales.",
+                    "<strong>Performance Tracking:</strong> Analyzed success using Instagram Insights and Google Analytics to track Reach, Engagement, and ROI."
+                ]
+            },
+            {
+                id: 6,
+                title: "YouTube Visual Branding",
+                desc: "Designing professional-grade Channel Art, Logos, and Thumbnails using precise pixel dimensions.",
+                sites: [
+                    { name: "Canva Design", url: "canva.com" },
+                    { name: "YouTube Studio", url: "studio.youtube.com" },
+                    { name: "YouTube Channel View", url: "youtube.com" }
+                ],
+                plugins: ["Canva Brand Kit", "Background Remover", "YouTube UI Preview"],
+                points: [
+                    "<strong>YouTube Logo:</strong> Designed a square asset at <strong>800 x 800 px</strong> (1:1 ratio). <em>Note: It displays as a circle, so keep text in the center.</em>",
+                    "<strong>Channel Banner:</strong> Created a large-scale image at <strong>2560 x 1440 px</strong> (16:9 ratio).",
+                    "<strong>Banner Safe Area:</strong> Focused all important text within the 1546 x 423 px center block to ensure visibility on mobile and desktop.",
+                    "<strong>Video Thumbnail:</strong> Designed a high-impact graphic at <strong>1280 x 720 px</strong> (16:9 ratio) under 2MB in size.",
+                    "<strong>Theory of Contrast:</strong> Used bright colors and bold outlines to make the thumbnail stand out in the YouTube 'Suggested' sidebar.",
+                    "<strong>Important Note:</strong> Successfully uploaded these assets to <strong>YouTube Studio > Customization > Branding</strong> to verify the live look on the channel."
+                ]
+            },
+            {
+                id: 8,
+                title: "WordPress Development & Free Hosting",
+                desc: "Building a live website from scratch using InfinityFree hosting and the Elementor page builder.",
+                sites: [
+                    { name: "InfinityFree Hosting", url: "www.infinityfree.com/" },
+                    { name: "Control Panel (vPanel)", url: "#" },
+                    { name: "Softaculous App Installer", url: "#" }
+                ],
+                plugins: ["Elementor (Page Builder)", "MC4WP (Mailchimp)", "Yoast SEO / RankMath", "Classic Editor"],
+                points: [
+                    "<strong>Domain Provisioning:</strong> Created a custom subdomain through <strong>InfinityFree</strong> to act as the web address.",
+                    "<strong>Server Management:</strong> Used the <strong>Control Panel (vPanel)</strong> to manage file directories and databases.",
+                    "<strong>Automated Installation:</strong> Utilized the <strong>Softaculous App Installer</strong> to deploy WordPress files to the server automatically.",
+                    "<strong>Plugin Ecosystem:</strong> Configured <strong>Elementor</strong> for drag-and-drop design and <strong>SEO plugins</strong> for search engine visibility.",
+                    "<strong>Content Architecture:</strong> Created and structured the primary pages (Home, About, Contact) using the WordPress Pages menu.",
+                    "<strong>Live Deployment:</strong> Verified the 'Publish' status to ensure the website is accessible to the public internet."
+                ]
+            },
+            {
+                id: 7,
+                title: "Google Analytics & Traffic Tracking",
+                desc: "Setting up Google Analytics 4 (GA4) on a live website to track visitor data and engagement metrics.",
+                sites: [
+                    { name: "Google Analytics", url: "analytics.google.com/" },
+                    { name: "Google Sites", url: "sites.google.com/" },
+                ],
+                plugins: ["Measurement ID", "Real-time Tracking"],
+                points: [
+                    "<strong>Platform Setup:</strong> Created a professional sample website using <strong>Google Sites</strong> to act as the data source.",
+                    "<strong>Property Configuration:</strong> Registered a new <strong>GA4 Property</strong> and set the reporting time zone and currency.",
+                    "<strong>Data Stream:</strong> Created a 'Web' stream by providing the website URL and giving the stream a unique name.",
+                    "<strong>Measurement ID:</strong> Extracted the unique <strong>G-XXXXXXX</strong> code from the Google Analytics dashboard.",
+                    "<strong>Backend Connection:</strong> Pasted the Measurement ID into the Google Sites 'Analytics' settings to link the two platforms.",
+                    "<strong>Real-time Verification:</strong> Used the <strong>Real-time Report</strong> in Analytics to verify that the connection is active and tracking live visits."
+                ]
+            },
+            {
+                id: 9,
+                title: "Practical Write-ups & Documentation",
+                desc: "A centralized repository of all technical documentation, lab reports, and step-by-step guides for the semester.",
+                sites: [
+                    { name: "Google Drive Folder", url: "drive.google.com/drive/folders/1QCj-BowM7N7AymlOJWulkBg21s7SrFkQ?usp=sharing" },
+                ],
+                plugins: [],
+                points: [
+                    "<strong>Centralized Storage:</strong> Hosted all practical work on <strong>Google Drive</strong> for easy access and cloud-based backup.",
+                    "<strong>Standardized Formatting:</strong> Created a consistent template for all write-ups to ensure high-clarity and professional standards.",
+                    "<strong>Asset Organization:</strong> Used a structured folder system to separate raw data, screenshots, and final PDF reports.",
+                    "<strong>Collaboration Logic:</strong> Configured 'Viewer' permissions on the drive link to allow external review without compromising file integrity.",
+                    "<strong>Technical Documentation:</strong> Compiled detailed guides for SEO, Social Media, Ads, and Web Development into a single resource hub.",
+                    "<strong>Important Note:</strong> This repository serves as the primary evidence of all practical experiments performed during the course."
+                ]
+            }
+            // You can add 7 more experiments here following the same format
+        ];
+
+        const listContainer = document.getElementById('listView');
+
+        function init() {
+            listContainer.innerHTML = experiments.map(exp => `
+        <div onclick="showDetail(${exp.id})" class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group">
+          <div class="flex justify-between items-start">
+            <h2 class="text-xl font-bold text-gray-800 group-hover:text-blue-600">${exp.title}</h2>
+            <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">ID: ${exp.id}</span>
+          </div>
+          <p class="text-gray-500 mt-2 text-sm line-clamp-2">${exp.desc}</p>
+          <div class="mt-4 flex gap-2">
+             <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-bold uppercase">${exp.sites.length} Sites</span>
+             <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-1 rounded-full font-bold uppercase">${exp.plugins.length} Plugins</span>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        function showDetail(id) {
+            const exp = experiments.find(e => e.id === id);
+
+            // Title
+            document.getElementById('detHeader').innerHTML = `
+        <h2 class="text-5xl font-black">${exp.title}</h2>
+        <p class="text-blue-200 mt-4 text-xl max-w-2xl">${exp.desc}</p>
+      `;
+
+            // Render Sites
+            document.getElementById('detSites').innerHTML = exp.sites.map(s => `
+        <a href="https://${s.url}" target="_blank" class="block p-3 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors truncate font-medium">
+          ${s.name}
+        </a>
+      `).join('');
+
+            // Render Plugins
+            document.getElementById('detPlugins').innerHTML = exp.plugins.map(p => `
+        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold border border-purple-200">
+          ${p}
+        </span>
+      `).join('');
+
+            // Render Points
+            document.getElementById('detPoints').innerHTML = exp.points.map(pt => `
+        <li class="flex items-start gap-2">
+          <span class="text-green-500 mt-1">✔</span>
+          <span>${pt}</span>
+        </li>
+      `).join('');
+
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('detailView').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showList() {
+            document.getElementById('listView').classList.remove('hidden');
+            document.getElementById('detailView').classList.add('hidden');
+        }
+
+        init();
+    </script>
+
+</body>
+
+</html>
