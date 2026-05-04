@@ -1,18 +1,21 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Manually define __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = 3000;
 
 const server = http.createServer((req, res) => {
-    // Look for files in the same folder as this script
     let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
 
-    // Read the file from the root folder
     fs.readFile(filePath, (error, content) => {
         if (error) {
             if (error.code === 'ENOENT') {
-                // ERROR HANDLING: If page doesn't exist, serve index.html (Redirect to Home)
+                // If page doesn't exist, serve index.html (Redirect to Home)
                 fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
                     if (err) {
                         res.writeHead(404);
@@ -23,12 +26,10 @@ const server = http.createServer((req, res) => {
                     }
                 });
             } else {
-                // ERROR HANDLING: Generic Server Error
                 res.writeHead(500);
                 res.end(`Server Error: ${error.code}`);
             }
         } else {
-            // SUCCESS: Serve the file with the correct type
             const ext = path.extname(filePath);
             const contentType = ext === '.js' ? 'text/javascript' : 'text/html';
             res.writeHead(200, { 'Content-Type': contentType });
