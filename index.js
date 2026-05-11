@@ -1,6 +1,8 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { marked } from 'marked';
 
 const app = express();
 const PORT = 3000;
@@ -10,6 +12,41 @@ const __dirname = path.dirname(__filename);
 
 app.get('/view-pdf', (req, res) => {
     res.sendFile(path.join(__dirname, 'DBMS.pdf'));
+});
+
+app.get('/view-md', (req, res) => {
+    // 1. Path to your .md file
+    const filePath = path.join(__dirname, 'DBMS.md');
+
+    // 2. Read the file
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) return res.status(500).send('Error reading file');
+
+        // 3. Convert Markdown to HTML
+        const htmlContent = marked.parse(data);
+
+        // 4. Wrap in GitHub CSS and 'markdown-body' class
+        res.send(`
+            <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+                    <style>
+                        .markdown-body {
+                            box-sizing: border-box;
+                            min-width: 200px;
+                            max-width: 980px;
+                            margin: 0 auto;
+                            padding: 45px;
+                        }
+                    </style>
+                </head>
+                <body class="markdown-body">
+                    ${htmlContent}
+                </body>
+            </html>
+        `);
+    });
 });
 
 app.get('/', (req, res) => {
@@ -42,6 +79,15 @@ app.get('/', (req, res) => {
                     <div class="relative z-10">
                         <span class="text-4xl">📚</span>
                         <h2 class="text-xl font-bold mt-4">Full Solution PDF</h2>
+                        <p class="text-rose-100 text-sm mt-1">Open comprehensive DBMS Solved Solution</p>
+                    </div>
+                </a>
+
+                 <a href="/view-md" target="_blank" 
+                   class="group relative overflow-hidden bg-gradient-to-br from-orange-600 to-red-700 p-6 rounded-2xl shadow-2xl transition-all hover:scale-[1.02] active:scale-95">
+                    <div class="relative z-10">
+                        <span class="text-4xl">{}.md</span>
+                        <h2 class="text-xl font-bold mt-4">Full Solution markdown</h2>
                         <p class="text-rose-100 text-sm mt-1">Open comprehensive DBMS Solved Solution</p>
                     </div>
                 </a>
