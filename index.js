@@ -1,43 +1,67 @@
-import http from 'node:http';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const app = express();
+const PORT = 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 3000; // Vercel provides the port
-
-const server = http.createServer((req, res) => {
-    // Look in the 'public' directory
-    let filePath = path.join(__dirname, 'public', req.url === '/' ? 'index.html' : req.url);
-
-    fs.readFile(filePath, (error, content) => {
-        if (error) {
-            if (error.code === 'ENOENT') {
-                // FALLBACK: If file doesn't exist, always serve the main index.html
-                fs.readFile(path.join(__dirname, 'public', 'index.html'), (err, data) => {
-                    if (err) {
-                        res.writeHead(404);
-                        res.end("Primary index.html not found in public folder.");
-                    } else {
-                        res.writeHead(200, { 'Content-Type': 'text/html' });
-                        res.end(data, 'utf-8');
-                    }
-                });
-            } else {
-                res.writeHead(500);
-                res.end(`Server Error: ${error.code}`);
-            }
-        } else {
-            const ext = path.extname(filePath);
-            const contentType = ext === '.js' ? 'text/javascript' : 'text/html';
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-        }
-    });
+app.get('/view-pdf', (req, res) => {
+    res.sendFile(path.join(__dirname, 'database.pdf'));
 });
 
-server.listen(PORT, () => {
-    console.log(`Server live on port ${PORT}`);
+app.get('/', (req, res) => {
+    res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DBMS Reference Dashboard</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        </style>
+    </head>
+    <body class="bg-gray-900 text-gray-100 min-h-screen p-4 font-sans">
+        
+        <div class="max-w-4xl mx-auto">
+            <!-- Header & Search -->
+            <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h1 class="text-2xl font-black tracking-tighter text-blue-400">DBMS Pratical Cheat sheet</h1>
+                
+            </div>
+
+            <!-- Main Action Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- PDF Quick Access -->
+                <a href="/view-pdf" target="_blank" 
+                   class="group relative overflow-hidden bg-gradient-to-br from-rose-600 to-red-700 p-6 rounded-2xl shadow-2xl transition-all hover:scale-[1.02] active:scale-95">
+                    <div class="relative z-10">
+                        <span class="text-4xl">📚</span>
+                        <h2 class="text-xl font-bold mt-4">Full Solution PDF</h2>
+                        <p class="text-rose-100 text-sm mt-1">Open comprehensive DBMS Solved Solution</p>
+                    </div>
+                </a>
+
+                <!-- ChatGPT AI Assist -->
+                <a href="https://chatgpt.com/share/6a00d7a7-9a2c-8321-8550-ab9f5c2cacf8" target="_blank" 
+                   class="group relative overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-700 p-6 rounded-2xl shadow-2xl transition-all hover:scale-[1.02] active:scale-95">
+                    <div class="relative z-10">
+                        <span class="text-4xl">🧠</span>
+                        <h2 class="text-xl font-bold mt-4">AI Query</h2>
+                        <p class="text-emerald-100 text-sm mt-1">Explain concepts or solve SQL queries</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </body>
+    </html>
+    `);
+});
+
+app.listen(PORT, () => {
+    console.log(`Server Live: http://localhost:${PORT}`);
 });
