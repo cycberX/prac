@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.get('/view-pdf', (req, res) => {
-    res.sendFile(path.join(__dirname, 'database.pdf'));
+    res.sendFile(path.join(__dirname, 'DBMS.pdf'));
 });
 
 app.get('/', (req, res) => {
